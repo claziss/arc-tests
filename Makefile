@@ -31,6 +31,7 @@ bmarks = \
 #--------------------------------------------------------------------
 
 ARCH = av2hs
+CPU = hs4xd
 SIM = ncam
 
 HOST_OPTS = -std=gnu99 -DPREALLOCATE=0 -DHOST_DEBUG=1
@@ -38,7 +39,8 @@ HOST_COMP = gcc $(HOST_OPTS)
 
 ARC_PREFIX ?= arc-elf32-
 ARC_GCC ?= $(ARC_PREFIX)gcc
-ARC_GCC_OPTS ?= -std=gnu99 -O3 -ffast-math -fno-common -fno-builtin-printf -mcpu=hs4xd
+ARC_GCC_OPTS ?= -std=gnu99 -O3 -ffast-math -fno-common -fno-builtin-printf\
+	 -mcpu=$(CPU)
 ARC_LINK ?= $(ARC_GCC) $(incs)
 
 ARC_LINK_OPTS ?= --specs=nsim.specs -Wl,--whole-archive \
