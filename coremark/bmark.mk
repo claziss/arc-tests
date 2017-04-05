@@ -35,5 +35,13 @@ $(coremark_arc_bin): $(coremark_c_objs) $(coremark_arc_objs)
 	$(ARC_LINK) $(coremark_c_objs) $(coremark_arc_objs) \
 	-o $(coremark_arc_bin) $(ARC_LINK_OPTS)
 
+coremark_arc_rep = coremark.arc.rep
+$(coremark_arc_rep): coremark.arc.out
+	grep "Iterations/Sec" $< | \
+	awk 'BEGIN{FS=":"}{print "Coremark |", $$2}' > $@
+
+bmarks_arc_rep := $(filter-out $(coremark_arc_rep), $(bmarks_arc_rep))
+extra_reports += $(coremark_arc_rep)
+
 junk += $(coremark_c_objs) $(coremark_arc_objs) \
-	$(coremark_host_bin) $(coremark_arc_bin)
+	$(coremark_host_bin) $(coremark_arc_bin) $(coremark_arc_rep)

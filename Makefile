@@ -65,24 +65,30 @@ VPATH += $(src_dir)/common
 
 incs  +=  -I$(src_dir)/common $(addprefix -I$(src_dir)/, $(bmarks))
 objs  :=
-
-include $(patsubst %, $(src_dir)/%/bmark.mk, $(bmarks))
-
-#------------------------------------------------------------
-# Build and run benchmarks on arc simulator
+extra_reports =
 
 bmarks_arc_bin  = $(addsuffix .arc,  $(bmarks))
 bmarks_arc_dump = $(addsuffix .arc.dump, $(bmarks))
 bmarks_arc_out  = $(addsuffix .arc.out,  $(bmarks))
+bmarks_arc_rep  = $(addsuffix .arc.rep,  $(bmarks))
+
+include $(patsubst %, $(src_dir)/%/bmark.mk, $(bmarks))
 
 bmarks_defs   = -DHOST_DEBUG=0
 bmarks_cycles = 80000
+
+#------------------------------------------------------------
+# Build and run benchmarks on arc simulator
 
 $(bmarks_arc_dump): %.arc.dump: %.arc
 	$(ARC_OBJDUMP) $< > $@
 
 $(bmarks_arc_out): %.arc.out: %.arc
 	$(ARC_SIM) $< &> $@
+
+$(bmarks_arc_rep): %.arc.rep: %.arc
+	grep "User time" $(basename $@).out | \
+	awk '{gsub(/,/,"");print "$(basename $@) | " $$3}' > $@
 
 %.o: %.c
 	$(ARC_GCC) $(ARC_GCC_OPTS) $(bmarks_defs) \
@@ -93,11 +99,13 @@ $(bmarks_arc_out): %.arc.out: %.arc
 	             -c $(incs) $< -o $@
 
 arc: $(bmarks_arc_dump)
-run-arc: $(bmarks_arc_out)
-	echo; grep CPI \
-	       $(bmarks_arc_out); echo;
+run: $(bmarks_arc_out)
+	echo; grep CPI $(bmarks_arc_out); echo;
+reports: $(bmarks_arc_rep) $(extra_reports)
+	cat *.rep
 
 junk += $(bmarks_arc_bin) $(bmarks_arc_dump) $(bmarks_arc_hex) $(bmarks_arc_out)
+junk += $(bmarks_arc_rep)
 
 #------------------------------------------------------------
 # Default
