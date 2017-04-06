@@ -43,7 +43,7 @@ ARC_GCC_OPTS ?= -std=gnu99 -O3 -ffast-math -fno-common -fno-builtin-printf\
 	 -mcpu=$(CPU)
 ARC_LINK ?= $(ARC_GCC) $(incs)
 
-ARC_LINK_OPTS ?= --specs=nsim.specs
+ARC_LINK_OPTS ?= --specs=nsim.specs -mcpu=$(CPU)
 ifeq ($(ARCH),av2hs)
 ARC_LINK_OPTS += -Wl,--section-start,.data=0x80000000 -Wl,--whole-archive \
 	${HOSTLINK_PATH}/archs/libhlt.a -Wl,--no-whole-archive
