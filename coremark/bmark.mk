@@ -26,6 +26,17 @@ coremark_cflags = -std=gnu99 -O3 -ffast-math -fno-common -fno-builtin-printf \
 	--param max-unroll-times=10000 --param max-unrolled-insns=10000 \
 	-fsched-pressure -fno-branch-count-reg
 
+ifeq ($(CPU),arcem)
+dhrystone_cflags  := -mcode-density -mbarrel-shifter -mnorm -mswap \
+	-O2 -fno-tree-loop-ivcanon -fgcse -frename-registers -funroll-all-loops \
+        -funroll-loops -fira-region=all -fira-loop-pressure -fno-cse-follow-jumps \
+        -funswitch-loops -fgcse-las -fsched-pressure -fno-sched-interblock \
+        -fno-toplevel-reorder --param max-unroll-times=10000 --param max-unrolled-insns=1000 \
+        --param max-pending-list-length=1000000 \
+        -mauto-modify-reg -finline-functions-called-once -finline-small-functions \
+	-finline-limit=500 -fno-jump-tables
+endif
+
 %.o.cm: %.c
 	$(ARC_GCC) $(ARC_GCC_OPTS) $(bmarks_defs) $(coremark_defs) \
 	$(coremark_cflags) -c $(incs) $< -o $@

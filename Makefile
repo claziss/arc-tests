@@ -93,7 +93,7 @@ $(bmarks_arc_out): %.arc.out: %.arc
 
 $(bmarks_arc_rep): %.arc.rep: %.arc
 	grep "User time" $(basename $@).out | \
-	awk '{gsub(/,/,"");print "$(basename $@) | " $$3}' > $@
+	awk '{gsub(/,/,"");print "$(basename $@) | " $$6/$$3}' > $@
 
 %.o: %.c
 	$(ARC_GCC) $(ARC_GCC_OPTS) $(bmarks_defs) \

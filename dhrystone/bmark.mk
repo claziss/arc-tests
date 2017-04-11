@@ -4,7 +4,7 @@ dhrystone_c_objs   = $(patsubst %.c, %.o.dhry, $(dhrystone_c_src))
 dhrystone_arc_objs =
 
 dhrystone_defs     = -DITERATIONS=10000 -DMSC_CLOCK
-dhrystone_cflags   = -O2  -mdiv-rem -mindexed-loads -mauto-modify-reg  \
+dhrystone_cflags   = -O2  -mdiv-rem \
 	-fno-branch-count-reg -fno-jump-tables -fno-ivopts -fira-loop-pressure \
 	-fno-gcse -frename-registers -fno-tree-dominator-opts \
 	--param max-unroll-times=10000 --param max-unrolled-insns=1000 \
