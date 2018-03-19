@@ -16,6 +16,11 @@ instbasedir = install
 #--------------------------------------------------------------------
 
 bmarks = \
+	whetstone \
+	whetstoneDP \
+	searchgame \
+	whetstone \
+	cachebench \
 	median \
 	qsort \
 	rsort \
@@ -63,6 +68,7 @@ ARC_SIM ?= $(NSIM_HOME)/bin/nsimdrv -tcf $(src_dir)/common/intel_mcc_bench.tcf \
 	-prop=nsim_isa_core=4 -on=nsim_ncam_experimental_option \
         -on=nsim_print_stats_on_exit -on=nsim_profile=1 \
 	$(NSIM_EXTRA)
+bmarks += linpack
 endif
 
 VPATH += $(addprefix $(src_dir)/, $(bmarks))
@@ -125,7 +131,7 @@ install_dir = $(instbasedir)/$(instname)-$(date_suffix)
 latest_install = $(shell ls -1 -d $(instbasedir)/$(instname)* | tail -n 1)
 
 install: $(bmarks_arc_out)
-	mkdir $(install_dir)
+	mkdir -p $(install_dir)
 	cp -r $(bmarks_arc_bin) $(bmarks_arc_out) $(install_dir)
 
 install-link:

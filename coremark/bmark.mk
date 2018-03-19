@@ -24,7 +24,7 @@ coremark_cflags = -std=gnu99 -O3 -ffast-math -fno-common -fno-builtin-printf \
         -funroll-loops -fira-region=all -fira-loop-pressure \
 	-fno-cse-follow-jumps -fno-toplevel-reorder \
 	--param max-unroll-times=10000 --param max-unrolled-insns=10000 \
-	-fsched-pressure -fno-branch-count-reg
+	-fsched-pressure
 
 ifeq ($(CPU),arcem)
 dhrystone_cflags  := -mcode-density -mbarrel-shifter -mnorm -mswap \
