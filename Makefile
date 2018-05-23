@@ -19,7 +19,6 @@ bmarks = \
 	whetstone \
 	whetstoneDP \
 	searchgame \
-	whetstone \
 	cachebench \
 	median \
 	qsort \
