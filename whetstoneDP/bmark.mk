@@ -33,7 +33,7 @@ $(whetstoneDP_arc_bin) : $(whetstoneDP_c_objs) $(whetstoneDP_arc_objs)
 whetstoneDP_arc_rep = whetstoneDP.arc.rep
 $(whetstoneDP_arc_rep): whetstoneDP.arc.out
 	grep -ohP "Whetstones:\s(\d+.\d+)\s" $< | \
-	awk 'BEGIN{FS=":"}{print "Whetstone DP |", $$2}' > $@
+	awk 'BEGIN{FS=":"}{print "WhetstoneDP |", $$2}' > $@
 
 bmarks_arc_rep := $(filter-out $(whetstoneDP_arc_rep), $(bmarks_arc_rep))
 extra_reports += $(whetstoneDP_arc_rep)
