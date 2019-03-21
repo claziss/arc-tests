@@ -1,0 +1,11 @@
+common/intel_lte.tcf
+common/intel_mcc_bench.tcf
+coremark/core_list_join.c
+coremark/core_main.c
+coremark/core_matrix.c
+coremark/core_portme.c
+coremark/core_portme.h
+coremark/core_state.c
+coremark/core_util.c
+coremark/coremark.c
+coremark/coremark.h
