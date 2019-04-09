@@ -67,7 +67,23 @@ ARC_SIM ?= $(NSIM_HOME)/bin/nsimdrv -tcf $(src_dir)/common/intel_mcc_bench.tcf \
 	-prop=nsim_isa_core=4 -on=nsim_ncam_experimental_option \
         -on=nsim_print_stats_on_exit -on=nsim_profile=1 \
 	$(NSIM_EXTRA)
-bmarks += linpack
+bmarks += linpack \
+	a2time01 \
+	aifftr01 \
+	aifirf01 \
+	aiifft01 \
+	basefp01 \
+	bitmnp01 \
+	cacheb01 \
+	canrdr01 \
+	idctrn01 \
+	iirflt01 \
+	matrix01 \
+	pntrch01 \
+	puwmod01 \
+	rspeed01 \
+	tblook01 \
+	ttsprk01
 endif
 
 VPATH += $(addprefix $(src_dir)/, $(bmarks))
