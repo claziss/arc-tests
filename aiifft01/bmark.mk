@@ -39,7 +39,7 @@ $(aiifft01_arc_bin): $(aiifft01_c_objs) $(aiifft01_arc_objs) $(aiifft01_l_objs)
 aiifft01_arc_rep = aiifft01.arc.rep
 $(aiifft01_arc_rep): aiifft01.arc.out
 	grep "Iterations/Sec" $< | \
-	awk 'BEGIN{FS=":"}{print "Aiifft01 |", $$2}' > $@
+	awk 'BEGIN{FS="="}{print "Aiifft01 |", $$2}' > $@
 
 bmarks_arc_rep := $(filter-out $(aiifft01_arc_rep), $(bmarks_arc_rep))
 extra_reports += $(aiifft01_arc_rep)

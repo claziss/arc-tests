@@ -39,7 +39,7 @@ $(tblook01_arc_bin): $(tblook01_c_objs) $(tblook01_arc_objs) $(tblook01_l_objs)
 tblook01_arc_rep = tblook01.arc.rep
 $(tblook01_arc_rep): tblook01.arc.out
 	grep "Iterations/Sec" $< | \
-	awk 'BEGIN{FS=":"}{print "Bitmnp01 |", $$2}' > $@
+	awk 'BEGIN{FS="="}{print "tblook01 |", $$2}' > $@
 
 bmarks_arc_rep := $(filter-out $(tblook01_arc_rep), $(bmarks_arc_rep))
 extra_reports += $(tblook01_arc_rep)

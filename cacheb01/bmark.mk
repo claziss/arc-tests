@@ -39,7 +39,7 @@ $(cacheb01_arc_bin): $(cacheb01_c_objs) $(cacheb01_arc_objs) $(cacheb01_l_objs)
 cacheb01_arc_rep = cacheb01.arc.rep
 $(cacheb01_arc_rep): cacheb01.arc.out
 	grep "Iterations/Sec" $< | \
-	awk 'BEGIN{FS=":"}{print "Cacheb01 |", $$2}' > $@
+	awk 'BEGIN{FS="="}{print "Cacheb01 |", $$2}' > $@
 
 bmarks_arc_rep := $(filter-out $(cacheb01_arc_rep), $(bmarks_arc_rep))
 extra_reports += $(cacheb01_arc_rep)

@@ -26,12 +26,14 @@ a2time01_cflags = -O3 -flto
 a2time01_arc_bin = a2time01.arc
 $(a2time01_arc_bin): $(a2time01_c_objs) $(a2time01_arc_objs)
 	$(ARC_LINK) $(a2time01_c_objs) $(a2time01_arc_objs) \
-	-o $(a2time01_arc_bin) $(ARC_LINK_OPTS) -flto
+	-o $(a2time01_arc_bin) $(ARC_LINK_OPTS) \
+	-Wl,--defsym=__DEFAULT_HEAP_SIZE=262144 \
+	-Wl,--section-start,.data=2147483648 -flto
 
 a2time01_arc_rep = a2time01.arc.rep
 $(a2time01_arc_rep): a2time01.arc.out
 	grep "Iterations/Sec" $< | \
-	awk 'BEGIN{FS=":"}{print "A2time01 |", $$2}' > $@
+	awk 'BEGIN{FS="="}{print "A2time01 |", $$2}' > $@
 
 bmarks_arc_rep := $(filter-out $(a2time01_arc_rep), $(bmarks_arc_rep))
 extra_reports += $(a2time01_arc_rep)

@@ -39,7 +39,7 @@ $(idctrn01_arc_bin): $(idctrn01_c_objs) $(idctrn01_arc_objs) $(idctrn01_l_objs)
 idctrn01_arc_rep = idctrn01.arc.rep
 $(idctrn01_arc_rep): idctrn01.arc.out
 	grep "Iterations/Sec" $< | \
-	awk 'BEGIN{FS=":"}{print "Bitmnp01 |", $$2}' > $@
+	awk 'BEGIN{FS="="}{print "idctrn01 |", $$2}' > $@
 
 bmarks_arc_rep := $(filter-out $(idctrn01_arc_rep), $(bmarks_arc_rep))
 extra_reports += $(idctrn01_arc_rep)

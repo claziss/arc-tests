@@ -39,7 +39,7 @@ $(matrix01_arc_bin): $(matrix01_c_objs) $(matrix01_arc_objs) $(matrix01_l_objs)
 matrix01_arc_rep = matrix01.arc.rep
 $(matrix01_arc_rep): matrix01.arc.out
 	grep "Iterations/Sec" $< | \
-	awk 'BEGIN{FS=":"}{print "Bitmnp01 |", $$2}' > $@
+	awk 'BEGIN{FS="="}{print "matrix01 |", $$2}' > $@
 
 bmarks_arc_rep := $(filter-out $(matrix01_arc_rep), $(bmarks_arc_rep))
 extra_reports += $(matrix01_arc_rep)

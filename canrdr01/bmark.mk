@@ -39,7 +39,7 @@ $(canrdr01_arc_bin): $(canrdr01_c_objs) $(canrdr01_arc_objs) $(canrdr01_l_objs)
 canrdr01_arc_rep = canrdr01.arc.rep
 $(canrdr01_arc_rep): canrdr01.arc.out
 	grep "Iterations/Sec" $< | \
-	awk 'BEGIN{FS=":"}{print "Bitmnp01 |", $$2}' > $@
+	awk 'BEGIN{FS="="}{print "canrdr01 |", $$2}' > $@
 
 bmarks_arc_rep := $(filter-out $(canrdr01_arc_rep), $(bmarks_arc_rep))
 extra_reports += $(canrdr01_arc_rep)

@@ -39,7 +39,7 @@ $(rspeed01_arc_bin): $(rspeed01_c_objs) $(rspeed01_arc_objs) $(rspeed01_l_objs)
 rspeed01_arc_rep = rspeed01.arc.rep
 $(rspeed01_arc_rep): rspeed01.arc.out
 	grep "Iterations/Sec" $< | \
-	awk 'BEGIN{FS=":"}{print "Bitmnp01 |", $$2}' > $@
+	awk 'BEGIN{FS="="}{print "rspeed01 |", $$2}' > $@
 
 bmarks_arc_rep := $(filter-out $(rspeed01_arc_rep), $(bmarks_arc_rep))
 extra_reports += $(rspeed01_arc_rep)

@@ -39,7 +39,7 @@ $(basefp01_arc_bin): $(basefp01_c_objs) $(basefp01_arc_objs) $(basefp01_l_objs)
 basefp01_arc_rep = basefp01.arc.rep
 $(basefp01_arc_rep): basefp01.arc.out
 	grep "Iterations/Sec" $< | \
-	awk 'BEGIN{FS=":"}{print "Basefp01 |", $$2}' > $@
+	awk 'BEGIN{FS="="}{print "Basefp01 |", $$2}' > $@
 
 bmarks_arc_rep := $(filter-out $(basefp01_arc_rep), $(bmarks_arc_rep))
 extra_reports += $(basefp01_arc_rep)

@@ -39,7 +39,7 @@ $(puwmod01_arc_bin): $(puwmod01_c_objs) $(puwmod01_arc_objs) $(puwmod01_l_objs)
 puwmod01_arc_rep = puwmod01.arc.rep
 $(puwmod01_arc_rep): puwmod01.arc.out
 	grep "Iterations/Sec" $< | \
-	awk 'BEGIN{FS=":"}{print "Bitmnp01 |", $$2}' > $@
+	awk 'BEGIN{FS="="}{print "puwmod01 |", $$2}' > $@
 
 bmarks_arc_rep := $(filter-out $(puwmod01_arc_rep), $(bmarks_arc_rep))
 extra_reports += $(puwmod01_arc_rep)
