@@ -38,26 +38,26 @@ ARCH = av2hs
 CPU = hs4xd
 SIM = ncam
 
-HOST_OPTS = -std=gnu99 -DPREALLOCATE=0 -DHOST_DEBUG=1
-HOST_COMP = gcc $(HOST_OPTS)
-
 ARC_PREFIX ?= arc-elf32-
 ARC_GCC ?= $(ARC_PREFIX)gcc
 ARC_GCC_OPTS ?= -std=gnu99 -O3 -ffast-math -fno-common -fno-builtin-printf\
-	 -mcpu=$(CPU)
+	 -mcpu=$(CPU) -flto
+#	-march=rv32imc -flto
 ARC_LINK ?= $(ARC_GCC) $(incs)
 
-ARC_LINK_OPTS ?= --specs=nsim.specs -mcpu=$(CPU)
+ARC_LINK_OPTS ?= --specs=nsim.specs -mcpu=$(CPU) -flto -lm
 ifeq ($(ARCH),av2hs)
-ARC_LINK_OPTS += -Wl,--section-start,.data=0x80000000 -Wl,--whole-archive \
-	${HOSTLINK_PATH}/archs/libhlt.a -Wl,--no-whole-archive
+#ARC_LINK_OPTS += -Wl,--section-start,.data=0x80000000 -Wl,--whole-archive \
+#	${HOSTLINK_PATH}/archs/libhlt.a -Wl,--no-whole-archive
 else
-ARC_LINK_OPTS += -Wl,--whole-archive \
-	${HOSTLINK_PATH}/arcem/libhlt.a -Wl,--no-whole-archive
+#ARC_LINK_OPTS += -Wl,--whole-archive \
+#	${HOSTLINK_PATH}/arcem/libhlt.a -Wl,--no-whole-archive
 endif
 
 ARC_OBJDUMP ?= $(ARC_PREFIX)objdump --disassemble-all --disassemble-zeroes --section=.text \
 	--section=.text.startup --section=.data
+
+ARC_SIZE ?= $(ARC_PREFIX)size -G
 
 ifeq ($(SIM),xcam)
 ARC_SIM ?= mdb -arcint=rascalint,rascal_env=$(RASCAL_ENV) -notrace -noprofile -run
@@ -86,6 +86,13 @@ bmarks += linpack \
 	ttsprk01
 endif
 
+# EEMBC support files.
+eembc_c_lib = \
+	crc.c  heap.c  memmgr.c  printfe.c  ssubs.c  syscalls.c  \
+	thal.c  therror.c  thfl.c  thlib.c  uuencode.c anytoi.c
+
+eembc_speed_objs  = $(patsubst %.c, %.o.lib, $(eembc_c_lib))
+
 VPATH += $(addprefix $(src_dir)/, $(bmarks))
 VPATH += $(src_dir)/common
 
@@ -100,8 +107,7 @@ bmarks_arc_rep  = $(addsuffix .arc.rep,  $(bmarks))
 
 include $(patsubst %, $(src_dir)/%/bmark.mk, $(bmarks))
 
-bmarks_defs   = -DHOST_DEBUG=0
-bmarks_cycles = 80000
+bmarks_defs   = -DHOST_DEBUG=0 -DHEAP_SIZE=13107
 
 #------------------------------------------------------------
 # Build and run benchmarks on arc simulator
@@ -114,7 +120,12 @@ $(bmarks_arc_out): %.arc.out: %.arc
 
 $(bmarks_arc_rep): %.arc.rep: %.arc
 	grep "User time" $(basename $@).out | \
-	awk '{gsub(/,/,"");print "$(basename $@) | " $$6/$$3}' > $@
+	awk '{gsub(/,/,"");print "$(basename $@) | " $$6/$$3}' > $@ ; \
+	grep -q "Failure" $(basename $@).out && echo -n " *" >> $@ || true
+
+%.o.lib: %.c
+	$(ARC_GCC) $(ARC_GCC_OPTS) $(bmarks_defs) -c $(incs) $< -o $@
+
 
 %.o: %.c
 	$(ARC_GCC) $(ARC_GCC_OPTS) $(bmarks_defs) \
@@ -127,16 +138,77 @@ $(bmarks_arc_rep): %.arc.rep: %.arc
 arc: $(bmarks_arc_dump)
 run: $(bmarks_arc_out)
 	echo; grep CPI $(bmarks_arc_out); echo;
-reports: $(bmarks_arc_rep) $(extra_reports)
-	cat *.rep
+reports: $(bmarks_arc_out) $(bmarks_arc_rep) $(extra_reports)
+	cat *.arc.rep
 
 junk += $(bmarks_arc_bin) $(bmarks_arc_dump) $(bmarks_arc_hex) $(bmarks_arc_out)
-junk += $(bmarks_arc_rep)
+junk += $(bmarks_arc_rep) $(eembc_speed_objs)
 
 #------------------------------------------------------------
 # Default
 
 all: arc
+
+#------------------------------------------------------------
+# Build and run benchmarks for size
+bmarks_size = \
+	a2time01 \
+	aifftr01 \
+	aifirf01 \
+	aiifft01 \
+	basefp01 \
+	bitmnp01 \
+	cacheb01 \
+	canrdr01 \
+	idctrn01 \
+	iirflt01 \
+	matrix01 \
+	pntrch01 \
+	puwmod01 \
+	rspeed01 \
+	tblook01 \
+	ttsprk01
+
+size_cflags = -Os -flto  -fdata-sections -ffunction-sections \
+	-Wa,-mlinker-relax
+size_lflags = -flto  -Wl,-gc-sections -Wl,-relax
+
+eembc_l_objs  = $(patsubst %.c, %.o.slib, $(eembc_c_lib))
+
+%.o.slib: %.c
+	$(ARC_GCC) $(ARC_GCC_OPTS) $(bmarks_defs) -DHEAP_SIZE=13107 \
+	$(size_cflags) -c $(incs) $< -o $@
+
+define compile_template
+$(1).arc.size: $(wildcard $(src_dir)/$(1)/*.c) $$(eembc_l_objs)
+	$$(ARC_GCC) $$(ARC_GCC_OPTS) $$(bmarks_defs) \
+	$$($(1)_defs) $$(size_cflags) $$(incs) \
+	$$^ \
+	-o $$@ $$(size_lflags) $$(ARC_LINK_OPTS) \
+	-Wl,--defsym=__DEFAULT_HEAP_SIZE=262144 \
+	-Wl,--section-start,.data=2147483648 -lm
+endef
+
+$(foreach bmark,$(bmarks_size),$(eval $(call compile_template,$(bmark))))
+
+bmarks_size_bin = $(addsuffix .arc.size, $(bmarks_size))
+bmarks_size_out = $(addsuffix .arc.size.out, $(bmarks_size))
+bmarks_size_rep = $(addsuffix .arc.size.rep, $(bmarks_size))
+
+$(bmarks_size_out): %.size.out: %.size
+	$(ARC_SIM) $< &> $@
+
+$(bmarks_size_rep): %.size.rep: %.size
+	$(ARC_SIZE) $< > $@
+
+size: $(bmarks_size_bin) $(bmarks_size_rep)
+
+run-size: $(bmarks_size_out)
+
+report-size: $(bmarks_size_rep)
+	cat *.size.rep  | grep -v "text"
+
+junk += $(bmarks_size_bin) $(bmarks_size_out) $(bmarks_size_rep) $(eembc_l_objs)
 
 #------------------------------------------------------------
 # Install

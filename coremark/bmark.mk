@@ -4,7 +4,7 @@
 #
 # Each benchmark directory should have its own fragment which
 # essentially lists what the source files are and how to link them
-# into an riscv and/or host executable. All variables should include
+# into an arc and/or host executable. All variables should include
 # the benchmark name as a prefix so that they are unique.
 #
 
