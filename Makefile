@@ -47,11 +47,11 @@ ARC_LINK ?= $(ARC_GCC) $(incs)
 
 ARC_LINK_OPTS ?= --specs=nsim.specs -mcpu=$(CPU) -flto -lm
 ifeq ($(ARCH),av2hs)
-#ARC_LINK_OPTS += -Wl,--section-start,.data=0x80000000 -Wl,--whole-archive \
-#	${HOSTLINK_PATH}/archs/libhlt.a -Wl,--no-whole-archive
+ARC_LINK_OPTS += -Wl,--section-start,.data=0x80000000 -Wl,--whole-archive \
+	${HOSTLINK_PATH}/archs/libhlt.a -Wl,--no-whole-archive
 else
-#ARC_LINK_OPTS += -Wl,--whole-archive \
-#	${HOSTLINK_PATH}/arcem/libhlt.a -Wl,--no-whole-archive
+ARC_LINK_OPTS += -Wl,--whole-archive \
+	${HOSTLINK_PATH}/arcem/libhlt.a -Wl,--no-whole-archive
 endif
 
 ARC_OBJDUMP ?= $(ARC_PREFIX)objdump --disassemble-all --disassemble-zeroes --section=.text \
@@ -151,7 +151,7 @@ all: arc
 
 #------------------------------------------------------------
 # Build and run benchmarks for size
-bmarks_size = \
+bmarks_size = empty \
 	a2time01 \
 	aifftr01 \
 	aifirf01 \
